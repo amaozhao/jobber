@@ -7,7 +7,7 @@ from ..items import BossJobItem  # 导入刚才定义的 Item
 # 简化后的滚动脚本：使用原生 for 循环，减少 Promise 嵌套带来的上下文销毁风险
 scroll_script = """
 async () => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         window.scrollBy(0, 800);
         // 手动等待，不依赖复杂的 setInterval
         await new Promise(r => setTimeout(r, 1500));
@@ -81,6 +81,7 @@ class BossSpider(scrapy.Spider):
                         "playwright_context_kwargs": {"storage_state": "boss_state.json"},
                         "playwright_page_methods": [
                             PageMethod("wait_for_selector", ".job-box", timeout=15000),
+                            PageMethod("wait_for_timeout", 1200),
                         ],
                         "item": {
                             "job_title": job_title.strip() if job_title else "N/A",
