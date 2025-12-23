@@ -24,7 +24,6 @@ ROBOTSTXT_OBEY = False
 # Concurrency and throttling settings
 # CONCURRENT_REQUESTS = 16
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
-DOWNLOAD_DELAY = 1
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED = False
@@ -104,7 +103,7 @@ PLAYWRIGHT_LAUNCH_OPTIONS = {
     "executable_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "headless": False,
     "args": [
-        "--disable-blink-features=AutomationControlled", # 核心：禁用自动化特征
+        "--disable-blink-features=AutomationControlled",  # 核心：禁用自动化特征
     ],
 }
 
@@ -117,9 +116,9 @@ DOWNLOADER_MIDDLEWARES = {
 }
 PLAYWRIGHT_CONTEXTS = {
     "default": {
-        "storage_state": "boss_state.json", # 加载保存的登录状态
+        "storage_state": "boss_state.json",  # 加载保存的登录状态
         "viewport": {"width": 1280, "height": 720},
-        "user_agent": "你的常用浏览器 UA", # 最好与保存状态时使用的 UA 一致
+        "user_agent": "你的常用浏览器 UA",  # 最好与保存状态时使用的 UA 一致
     }
 }
 LOG_LEVEL = "INFO"
@@ -128,5 +127,13 @@ DOWNLOAD_TIMEOUT = 60
 ITEM_PIPELINES = {
     "jobber.pipelines.BossPipeline": 300,
 }
-# 顺便加上之前讨论过的限速配置，确保 Pipeline 写入稳定
+
+# 1. 开启自动限速扩展
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 5.0  # 初始下载延迟
+AUTOTHROTTLE_MAX_DELAY = 60.0  # 高负载时最大延迟
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0  # 目标并发数
+
+# 2. 降低并发
 CONCURRENT_REQUESTS = 1
+DOWNLOAD_DELAY = 5  # 每次请求间隔 5 秒左右

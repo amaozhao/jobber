@@ -1,0 +1,4 @@
+playwright==1.57.0
+playwright-stealth==2.0.0
+Scrapy==2.13.4
+scrapy-playwright==0.0.44

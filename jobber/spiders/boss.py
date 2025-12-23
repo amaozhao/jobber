@@ -1,3 +1,5 @@
+import asyncio
+import random
 import scrapy
 from scrapy_playwright.page import PageMethod
 
@@ -21,15 +23,17 @@ async () => {
 class BossSpider(scrapy.Spider):
     name = "boss"
     allowed_domains = ["www.zhipin.com"]
-    start_urls = [
-        "https://www.zhipin.com/web/geek/jobs?query=python&city=101280600",
-        "https://www.zhipin.com/web/geek/jobs?city=101280600&query=java",
-        # "https://www.zhipin.com/web/geek/jobs?city=101280600&query=%E5%85%BC%E8%81%8C",
-    ]
 
-    # 必须保留这个入口，内部重定向到你的 start
-    def start_requests(self):
-        return self.start()
+    def __init__(self, urls=None, *args, **kwargs):
+        super(BossSpider, self).__init__(*args, **kwargs)
+        if urls:
+            self.start_urls = urls.split(",")
+        else:
+            self.start_urls = [
+                "https://www.zhipin.com/web/geek/jobs?query=python&city=101280600",
+                "https://www.zhipin.com/web/geek/jobs?city=101280600&query=java",
+                # "https://www.zhipin.com/web/geek/jobs?city=101280600&query=%E5%85%BC%E8%81%8C",
+            ]
 
     async def start(self):
         for index, url in enumerate(self.start_urls):
@@ -37,7 +41,7 @@ class BossSpider(scrapy.Spider):
                 url,
                 callback=self.parse,
                 # 给不同的搜索请求分配不同的优先级，数值越小越晚执行
-                priority=100 - index, 
+                priority=100 - index,
                 meta={
                     "playwright": True,
                     "playwright_include_page": True,
@@ -56,6 +60,7 @@ class BossSpider(scrapy.Spider):
             )
 
     async def parse(self, response):
+        await asyncio.sleep(random.uniform(2, 5))
         # 增加一个保护判断
         if "security-check" in response.url:
             self.logger.error("糟糕！被重定向到了验证码页面")
